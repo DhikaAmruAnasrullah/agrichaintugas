@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ function AuthPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [busy, setBusy] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && user) navigate({ to: "/dashboard" });
@@ -39,15 +41,33 @@ function AuthPage() {
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    setLoginError(null);
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({
-      email: String(fd.get("email")),
+      email: String(fd.get("email")).trim(),
       password: String(fd.get("password")),
     });
+    if (error) {
+      setBusy(false);
+      const message = error.message.includes("Invalid login credentials")
+        ? "Email atau kata sandi tidak cocok."
+        : error.message.includes("Email not confirmed")
+          ? "Email belum terverifikasi. Silakan cek email verifikasi Anda."
+          : error.message;
+      setLoginError(message);
+      return toast.error("Gagal masuk", { description: message });
+    }
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
     setBusy(false);
-    if (error) return toast.error("Gagal masuk", { description: error.message });
+    if (userError || !userData.user) {
+      const message = "Sesi login belum valid. Coba masuk kembali.";
+      setLoginError(message);
+      return toast.error("Gagal masuk", { description: message });
+    }
+
     toast.success("Berhasil masuk");
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/dashboard", replace: true });
   }
 
   const [role, setRole] = useState<AppRole>("petani");
@@ -55,6 +75,7 @@ function AuthPage() {
   async function handleSignup(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
+    setLoginError(null);
     setBusy(true);
     const { data, error } = await supabase.auth.signUp({
       email: String(fd.get("email")),
@@ -80,9 +101,8 @@ function AuthPage() {
   }
 
   async function handleGoogle() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin + "/dashboard" },
+    const { error } = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/dashboard",
     });
     if (error) toast.error("Gagal masuk dengan Google", { description: error.message });
   }
@@ -116,6 +136,11 @@ function AuthPage() {
                   <Label htmlFor="login-password">Kata sandi</Label>
                   <Input id="login-password" name="password" type="password" required autoComplete="current-password" />
                 </div>
+                {loginError ? (
+                  <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                    {loginError}
+                  </p>
+                ) : null}
                 <Button type="submit" className="w-full" disabled={busy}>
                   {busy ? "Memproses…" : "Masuk"}
                 </Button>
