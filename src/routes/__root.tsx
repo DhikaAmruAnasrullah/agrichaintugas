@@ -7,9 +7,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { supabase } from "@/integrations/supabase/client";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -115,6 +117,18 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const activeQueryClient = useQueryClient();
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      router.invalidate();
+      activeQueryClient.invalidateQueries();
+    });
+    return () => subscription.unsubscribe();
+  }, [router, activeQueryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
