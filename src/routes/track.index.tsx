@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { QrCode, Search } from "lucide-react";
 
-export const Route = createFileRoute("/track")({
+export const Route = createFileRoute("/track/")({
   head: () => ({
     meta: [
       { title: "Lacak Produk — AgriChain" },
