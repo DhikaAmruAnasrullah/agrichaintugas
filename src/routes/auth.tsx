@@ -56,7 +56,7 @@ function AuthPage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: String(fd.get("email")),
       password: String(fd.get("password")),
       options: {
@@ -71,9 +71,12 @@ function AuthPage() {
     });
     setBusy(false);
     if (error) return toast.error("Gagal mendaftar", { description: error.message });
-    toast.success("Akun dibuat", {
-      description: "Periksa email Anda untuk verifikasi, lalu masuk.",
-    });
+    if (data.session) {
+      toast.success("Akun dibuat, selamat datang!");
+      navigate({ to: "/dashboard" });
+    } else {
+      toast.success("Akun dibuat", { description: "Silakan masuk dengan akun Anda." });
+    }
   }
 
   async function handleGoogle() {
