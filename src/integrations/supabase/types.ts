@@ -14,16 +14,190 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      distribution_events: {
+        Row: {
+          actor_id: string | null
+          actor_name: string | null
+          created_at: string
+          event_type: string
+          id: string
+          location: string | null
+          notes: string | null
+          product_id: string
+          tx_hash: string
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          product_id: string
+          tx_hash: string
+        }
+        Update: {
+          actor_id?: string | null
+          actor_name?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          product_id?: string
+          tx_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "distribution_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lands: {
+        Row: {
+          area_ha: number
+          created_at: string
+          farmer_id: string
+          gps_coords: string | null
+          id: string
+          location: string | null
+          name: string
+        }
+        Insert: {
+          area_ha?: number
+          created_at?: string
+          farmer_id: string
+          gps_coords?: string | null
+          id?: string
+          location?: string | null
+          name: string
+        }
+        Update: {
+          area_ha?: number
+          created_at?: string
+          farmer_id?: string
+          gps_coords?: string | null
+          id?: string
+          location?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          commodity: string
+          created_at: string
+          farmer_id: string
+          harvest_date: string
+          id: string
+          land_id: string | null
+          method: string | null
+          product_code: string
+          status: string
+          variety: string | null
+          weight_kg: number
+        }
+        Insert: {
+          commodity: string
+          created_at?: string
+          farmer_id: string
+          harvest_date: string
+          id?: string
+          land_id?: string | null
+          method?: string | null
+          product_code: string
+          status?: string
+          variety?: string | null
+          weight_kg?: number
+        }
+        Update: {
+          commodity?: string
+          created_at?: string
+          farmer_id?: string
+          harvest_date?: string
+          id?: string
+          land_id?: string | null
+          method?: string | null
+          product_code?: string
+          status?: string
+          variety?: string | null
+          weight_kg?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_land_id_fkey"
+            columns: ["land_id"]
+            isOneToOne: false
+            referencedRelation: "lands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          phone: string | null
+          region: string | null
+          wallet_address: string | null
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string
+          id: string
+          phone?: string | null
+          region?: string | null
+          wallet_address?: string | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          region?: string | null
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "petani" | "distributor" | "konsumen"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +324,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "petani", "distributor", "konsumen"],
+    },
   },
 } as const
