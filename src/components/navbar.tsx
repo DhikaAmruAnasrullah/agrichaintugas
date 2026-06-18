@@ -12,9 +12,19 @@ export function Navbar() {
 
   async function connectWallet() {
     const eth = (window as unknown as { ethereum?: { request: (a: { method: string }) => Promise<string[]> } }).ethereum;
+
+    // MetaMask tidak menyuntikkan window.ethereum ke dalam iframe preview.
+    const inIframe = window.self !== window.top;
+    if (!eth && inIframe) {
+      toast.info("Buka di tab baru", {
+        description: "Dompet tidak bisa terhubung di dalam preview. Membuka aplikasi di tab baru…",
+      });
+      window.open(window.location.href, "_blank", "noopener");
+      return;
+    }
     if (!eth) {
       toast.error("MetaMask tidak terdeteksi", {
-        description: "Pasang ekstensi MetaMask untuk menghubungkan dompet.",
+        description: "Pasang ekstensi MetaMask di browser untuk menghubungkan dompet.",
       });
       return;
     }
@@ -23,9 +33,12 @@ export function Navbar() {
       if (accounts?.[0]) {
         setWallet(accounts[0]);
         toast.success("Dompet terhubung");
+      } else {
+        toast.error("Tidak ada akun yang dipilih");
       }
-    } catch {
-      toast.error("Gagal menghubungkan dompet");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Gagal menghubungkan dompet";
+      toast.error("Gagal menghubungkan dompet", { description: message });
     }
   }
 
