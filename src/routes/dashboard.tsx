@@ -91,6 +91,10 @@ function DashboardPage() {
 
   const role = data.role as AppRole;
 
+  if (role === "konsumen") {
+    return <ConsumerDashboard fullName={data.profile?.full_name || "Pengguna"} />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
