@@ -195,10 +195,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      owns_product: {
-        Args: { _product_id: string; _user_id: string }
-        Returns: boolean
-      }
     }
     Enums: {
       app_role: "admin" | "petani" | "distributor" | "konsumen"
