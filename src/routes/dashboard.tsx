@@ -51,7 +51,6 @@ import {
   Sprout,
   Plus,
   ExternalLink,
-  Search,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -91,10 +90,6 @@ function DashboardPage() {
   if (!data) return null;
 
   const role = data.role as AppRole;
-
-  if (role === "konsumen") {
-    return <ConsumerDashboard fullName={data.profile?.full_name || "Pengguna"} />;
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -232,80 +227,6 @@ function StatCard({
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-function ConsumerDashboard({ fullName }: { fullName: string }) {
-  const navigate = useNavigate();
-  const [code, setCode] = useState("");
-
-  function submit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const c = code.trim();
-    if (c) navigate({ to: "/track/$code", params: { code: c } });
-  }
-
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="mx-auto max-w-3xl px-6 py-10">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              Halo, {fullName}
-            </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Lacak asal-usul produk pertanian yang Anda beli.
-            </p>
-          </div>
-          <Badge variant="secondary" className="font-mono uppercase">
-            {ROLE_LABELS.konsumen}
-          </Badge>
-        </div>
-
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Lacak Produk</CardTitle>
-            <CardDescription>
-              Masukkan kode produk untuk melihat riwayat panen dan distribusinya.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={submit} className="flex flex-col gap-3 sm:flex-row">
-              <Input
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="Contoh: BER-2026-1219"
-                className="font-mono"
-              />
-              <Button type="submit">
-                <Search className="size-4" /> Lacak
-              </Button>
-            </form>
-            <Button variant="link" asChild className="mt-3 px-0">
-              <Link to="/track">Buka halaman pelacakan lengkap</Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="mt-6">
-          <CardContent className="flex items-start gap-4 p-5">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-secondary">
-              <Sprout className="size-5 text-primary" />
-            </span>
-            <div>
-              <p className="font-medium text-card-foreground">
-                Transparansi rantai pasok
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Setiap produk memiliki jejak terverifikasi mulai dari lahan
-                petani hingga sampai ke tangan Anda.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
   );
 }
 
