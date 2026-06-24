@@ -4,8 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
-
 /*
  * AgriChain design system — "Agri-modern lime"
  * brand-primary deep green, brand-accent lime, warm off-white surface.
