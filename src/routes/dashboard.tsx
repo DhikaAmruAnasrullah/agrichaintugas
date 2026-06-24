@@ -51,6 +51,7 @@ import {
   Sprout,
   Plus,
   ExternalLink,
+  Search,
 } from "lucide-react";
 import { toast } from "sonner";
 
